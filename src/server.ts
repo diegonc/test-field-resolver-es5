@@ -1,33 +1,26 @@
 import 'reflect-metadata';
-import { GraphQLServer } from 'graphql-yoga';
-import {
-  AuthChecker,
-  buildSchema,
-  buildTypeDefsAndResolvers
-} from 'type-graphql';
-import { createConnection } from 'typeorm';
+import { createYoga } from 'graphql-yoga';
+import { createServer } from 'node:http';
+import { AuthChecker, buildSchema } from 'type-graphql';
+
+import { GroupResolver } from './modules/group/group.resolver';
+import { PartyResolver } from './modules/party/party.resolver';
+import { PersonResolver } from './modules/person/person.resolver';
 
 async function bootstrap() {
   try {
-    const connection = await createConnection()
-
-    const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
-      resolvers: [__dirname + '/modules/**/*.resolver.ts'],
+    const schema = await buildSchema({
+      resolvers: [ PartyResolver, GroupResolver, PersonResolver ],
     })
 
-    console.log('typeDefs:\n', typeDefs);
+    const yoga = createYoga({ schema })
+    const server = createServer(yoga)
+    const port = 4200
+    const playground = '/graphql'
 
-    const server = new GraphQLServer({
-      resolvers,
-      typeDefs,
-    })
-    server.start({
-      port: 4200,
-      playground: '/playground',
-    }, ({ port, playground }) => {
+    server.listen(port, () => {
       console.log(`Server started at port http://localhost:${port}${playground}`)
     })
-
   } catch(e) {
     console.error("Error: ", e);
   }

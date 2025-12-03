@@ -12,6 +12,8 @@ import {
 import { Party } from './party.model'
 import { Group } from '../group/group.model'
 
+import { initDataSource } from '../../data-source'
+
 @Resolver(of => Party)
 export class PartyResolver implements ResolverInterface<Party> {
 
@@ -30,6 +32,8 @@ export class PartyResolver implements ResolverInterface<Party> {
 
   @Query(returns => [Party])
   async parties() {
-    return await Party.find()
+    const ds = await initDataSource()
+    const partyRepo = ds.getRepository(Party)
+    return await partyRepo.find()
   }
 }

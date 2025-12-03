@@ -9,19 +9,23 @@ import {
 import { Person } from './person.model'
 import { PersonCreateInput } from './person.utils'
 
+import { initDataSource } from '../../data-source'
+
 @Resolver(of => Person)
 export class PersonResolver {
   @Query(returns => [Person])
   async people() {
-    return await Person.find()
+    const ds = await initDataSource()
+    const personRepo = ds.getRepository(Person)
+    return await personRepo.find()
   }
 
   @Mutation(returns => Person)
   async createPerson(
     @Arg('data') data: PersonCreateInput
   ) {
-    const person = Person.create(data)
-    await person.save()
-    return person
+    const ds = await initDataSource()
+    const personRepo = ds.getRepository(Person)
+    return await personRepo.save(data)
   }
 }

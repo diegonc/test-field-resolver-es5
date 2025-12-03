@@ -15,7 +15,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "keyofStringsOnly": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
